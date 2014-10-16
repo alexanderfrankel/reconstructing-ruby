@@ -1,5 +1,6 @@
 %{
 	#include <stdio.h>
+	#include "parse.tab.h"
 
 	#define VTYPE(type, value) printf("%s(%s)\n", type, value)
 	#define TYPE(type) printf("%s\n", type)
@@ -17,7 +18,7 @@ NUMBER [0-9](_[0-9]|[0-9])*
 
 {NUMBER}(\.{NUMBER}|(\.{NUMBER})?[eE][+-]?{NUMBER}) { VTYPE("FLOAT", yytext); }
 
-{NUMBER} { VTYPE("NUMBER", yytext); }
+{NUMBER} { yylval = atoi(yytext); return tNUMBER; }
 
 \"([^"]|\\.)*\" { VTYPE("STRING", yytext); }
 \'([^']|\\.)*\' { VTYPE("STRING", yytext); }
@@ -30,7 +31,7 @@ NUMBER [0-9](_[0-9]|[0-9])*
 ">=" { TYPE("GTE"); }
 "<=" { TYPE("LTE"); }
 "!=" { TYPE("NEQUAL"); }
-"+" { TYPE("PLUS"); }
+"+" { return tPLUS; }
 "-" { TYPE("MINUS"); }
 "*" { TYPE("MULT"); }
 "/" { TYPE("DIV"); }
@@ -38,7 +39,7 @@ NUMBER [0-9](_[0-9]|[0-9])*
 "!" { TYPE("EMARK"); }
 "?" { TYPE("QMARK"); }
 "&" { TYPE("AND"); }
-"!" { TYPE("OR"); }
+"|" { TYPE("OR"); }
 "[" { TYPE("LSBRACE"); }
 "]" { TYPE("RSBRACE"); }
 "(" { TYPE("LPAREN"); }
